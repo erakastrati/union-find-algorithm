@@ -6,7 +6,7 @@ def initialize(num_users):
     rank = [0] * num_users  
     return parent, rank
 
-# identify and return the root or leader of the group to which a specific user or element belongs
+
 def find(parent, user):
     if parent[user] != user:  
         # recursively call find to move up the tree this will eventually reach the root of the group
@@ -38,14 +38,14 @@ def union(parent, rank, user1, user2):
             parent[root2] = root1  
             rank[root1] += 1  # increase the rank of root1, as root1's tree becomes deeper
 
-# check if two users are in the same group
+
 def are_in_same_group(parent, user1, user2):
     if find(parent, user1) == find(parent, user2):
         return True  # users are in the same group
     else:
         return False  # users are in different groups
 
-# Example usage:
+# a simple example
 def main():
     num_users = 5  # total number of users in the social network
     parent, rank = initialize(num_users)
