@@ -1,69 +1,67 @@
-
 def initialize(num_users):
-    # initially, each user is their own parent, which means they are all in separate groups (or disjoint sets)
-    parent = [i for i in range(num_users)]  
-    # each user is at the same level or tree height
-    rank = [0] * num_users  
+    # Inicializimi i strukturës së bashkimit
+    parent = [i for i in range(num_users)]  # Çdo përdorues është prind i vetes (fillimisht secili është grup më vete)
+    rank = [0] * num_users  # Ranku (lartësia e pemës) fillimisht është zero për secilin përdorues
     return parent, rank
 
 
 def find(parent, user):
-    if parent[user] != user:  
-        # recursively call find to move up the tree this will eventually reach the root of the group
-        parent[user] = find(parent, parent[user])  
-    # return the root of the group if the user is their own parent, this means the user is the root of the group
+    # Gjetja e përfaqësuesit të grupit për një përdorues
+    if parent[user] != user:  # Nëse nuk është rrënja, kërko rrënjën
+        parent[user] = find(parent, parent[user])  # Kompresimi i shtegut për optimizim
     return parent[user]
 
 
 def union(parent, rank, user1, user2):
-
-    root1 = find(parent, user1)  
-
-    root2 = find(parent, user2)  
+    # Bashkimi i dy grupeve në një
+    root1 = find(parent, user1)  # Gjejmë rrënjën e grupit të përdoruesit 1
+    root2 = find(parent, user2)  # Gjejmë rrënjën e grupit të përdoruesit 2
     
-    # only perform the union if the users are in different groups
-    if root1 != root2:  
-        # union by rank: we attach the smaller tree the one with less depth
+    # Bashkojmë vetëm nëse janë në grupe të ndryshme
+    if root1 != root2:
+        # Bashkim sipas rangut: lidhet pema më e vogël me atë më të madhe
         
-        # if the rank (tree height) of root1 is greater than root2, attach root2's tree to root1
+        # Nëse rrënja e parë ka rang më të madh, bëhet prind i rrënjës së dytë
         if rank[root1] > rank[root2]:
             parent[root2] = root1 
             
-        # if the rank (tree height) of root2 is greater than root1, attach root1's tree to root2
+        # Nëse rrënja e dytë ka rang më të madh, bëhet prind i rrënjës së parë
         elif rank[root1] < rank[root2]:
             parent[root1] = root2
             
         else:
-            # if both trees have the same rank make root1 the root of root2's group
+            # Nëse kanë të njëjtin rang, zgjedhim njërin (root1) si rrënjë dhe rrisim rangun e tij
             parent[root2] = root1  
-            rank[root1] += 1  # increase the rank of root1, as root1's tree becomes deeper
+            rank[root1] += 1  # Rritet rangu i root1, pasi pema e tij bëhet më e thellë
 
 
 def are_in_same_group(parent, user1, user2):
-    if find(parent, user1) == find(parent, user2):
-        return True  # users are in the same group
-    else:
-        return False  # users are in different groups
+    # Kontrollon nëse dy përdorues janë në të njëjtin grup
+    return find(parent, user1) == find(parent, user2)
 
-# a simple example
+
+# Shembull i thjeshtë për testim
+
 def main():
-    num_users = 5  # total number of users in the social network
-    parent, rank = initialize(num_users)
+    num_users = 5  # Numri total i përdoruesve në rrjetin social
+    parent, rank = initialize(num_users)  # Inicializimi i strukturës
 
-    # Union some users to form friend groups
-    union(parent, rank, 0, 1)  
-    union(parent, rank, 2, 3)
+    # Bashkojmë disa përdorues për të krijuar grupe shoqërore
+    union(parent, rank, 0, 1)  # Lidhim përdoruesin 0 me përdoruesin 1
+    union(parent, rank, 2, 3)  # Lidhim përdoruesin 2 me përdoruesin 3
     
-    # Check if user1 and user2 are in the same group
-    print("Are user1 and user2 in the same group?", are_in_same_group(parent, 0, 1))  # Expected: True
+    # Kontrollojmë nëse përdoruesi 0 dhe 1 janë në të njëjtin grup
+    print("A janë përdoruesi 0 dhe 1 në të njëjtin grup?", are_in_same_group(parent, 0, 1))  # Pritet: True
     
-    # Check if user1 and user3 are in the same group
-    print("Are user1 and user3 in the same group?", are_in_same_group(parent, 0, 2))  # Expected: False
+    # Kontrollojmë nëse përdoruesi 0 dhe 2 janë në të njëjtin grup
+    print("A janë përdoruesi 0 dhe 2 në të njëjtin grup?", are_in_same_group(parent, 0, 2))  # Pritet: False
     
-    # User2 and User3 become friends
+    # Përdoruesi 1 dhe 2 bëhen miq
     union(parent, rank, 1, 2)
     
-    print("Are user1 and user3 in the same group?", are_in_same_group(parent, 0, 2))  # Expected: True
+    # Kontrollojmë përsëri nëse përdoruesi 0 dhe 2 janë në të njëjtin grup
+    print("A janë përdoruesi 0 dhe 2 në të njëjtin grup?", are_in_same_group(parent, 0, 2))  # Pritet: True
+
 
 if __name__ == "__main__":
     main()
