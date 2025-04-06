@@ -1,3 +1,7 @@
+import time
+import sys
+import random
+
 def initialize(num_users):
     # Inicializimi i struktures se bashkimit
     parent = [i for i in range(num_users)]  # Çdo perdorues eshte prind i vetes (fillimisht secili eshte grup me vete)
@@ -39,29 +43,54 @@ def are_in_same_group(parent, user1, user2):
     # Kontrollon nese dy perdorues jane ne te njejtin grup
     return find(parent, user1) == find(parent, user2)
 
+def measure_memory_usage(parent, rank):
+    # Mat perdorimin e memories per listat parent dhe rank
+    return sys.getsizeof(parent) + sys.getsizeof(rank)
 
-# Shembull i thjeshte per testim
+def run_performance_tests(num_users, num_operations):
+    # Krijon strukturat fillestare
+    parent, rank = initialize(num_users)
+    
+    # Gjeneron operacione te rastesishme union
+    union_operations = [(random.randint(0, num_users - 1), random.randint(0, num_users - 1)) for _ in range(num_operations)]
+    find_operations = [random.randint(0, num_users - 1) for _ in range(num_operations)]
+    
+    # Mat kohen per operacionet union
+    start_time = time.time()
+    for user1, user2 in union_operations:
+        union(parent, rank, user1, user2)
+    union_time = time.time() - start_time
+    
+    # Mat kohen per operacionet find
+    start_time = time.time()
+    for user in find_operations:
+        find(parent, user)
+    find_time = time.time() - start_time
+    
+    # Mat perdorimin e memories
+    memory_usage = measure_memory_usage(parent, rank)
+    
+    return {
+        "num_users": num_users,
+        "num_operations": num_operations,
+        "union_time": union_time,
+        "find_time": find_time,
+        "memory_usage": memory_usage
+    }
 
 def main():
-    num_users = 5  # Numri total i perdoruesve ne rrjetin social
-    parent, rank = initialize(num_users)  # Inicializimi i struktures
-
-    # Bashkojme disa perdorues per te krijuar grupe shoqerore
-    union(parent, rank, 0, 1)  # Lidhim perdoruesin 0 me perdoruesin 1
-    union(parent, rank, 2, 3)  # Lidhim perdoruesin 2 me perdoruesin 3
+    # Teston algoritmin me raste te ndryshme te madhesise se te dhenave
+    test_cases = [
+        (100, 500),    # Rast i vogel
+        (1000, 5000),  # Rast mesatar
+        (10000, 50000) # Rast i madh
+    ]
     
-    # Kontrollojme nese perdoruesi 0 dhe 1 jane ne te njejtin grup
-    print("A jane perdoruesi 0 dhe 1 ne te njejtin grup?", are_in_same_group(parent, 0, 1))  # Pritet: True
-    
-    # Kontrollojme nese perdoruesi 0 dhe 2 jane ne te njejtin grup
-    print("A jane perdoruesi 0 dhe 2 ne te njejtin grup?", are_in_same_group(parent, 0, 2))  # Pritet: False
-    
-    # Perdoruesi 1 dhe 2 behen miq
-    union(parent, rank, 1, 2)
-    
-    # Kontrollojme perseri nese perdoruesi 0 dhe 2 jane ne te njejtin grup
-    print("A jane perdoruesi 0 dhe 2 ne te njejtin grup?", are_in_same_group(parent, 0, 2))  # Pritet: True
-
+    results = []
+    for num_users, num_operations in test_cases:
+        result = run_performance_tests(num_users, num_operations)
+        results.append(result)
+        print(result)  # Printon rezultatet per analize
 
 if __name__ == "__main__":
     main()
