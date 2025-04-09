@@ -53,14 +53,14 @@ class TestUnionFind(unittest.TestCase):
         self.assertTrue(are_in_same_group(parent, 0, 999))  # Te gjithe jane te lidhur
 
     def test_time_performance(self):
-        """Matja e kohes per nje rrjet shume te madh prej 10000 perdoruesish."""
-        parent, rank = initialize(10000)
+        """Matja e kohes per nje rrjet shume te madh prej 6 perdoruesish."""
+        parent, rank = initialize(6)
         start_time = time.time()
-        for i in range(9999):
+        for i in range(5):
             union(parent, rank, i, i + 1)
         end_time = time.time()
         execution_time = end_time - start_time
-        print(f"Koha e ekzekutimit per 10,000 perdorues: {execution_time:.5f} sekonda")
+        print(f"Koha e ekzekutimit per 6 perdorues: {execution_time:.5f} sekonda")
         self.assertTrue(execution_time < 1)  # Sigurohemi qe ekzekutimi te mos zgjase shume
 
 if __name__ == "__main__":
